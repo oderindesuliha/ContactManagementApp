@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Document(collection = "otp")
+@Document(collection = "otps")
 public class Otp {
     @Id
     private String id;

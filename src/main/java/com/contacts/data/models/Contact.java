@@ -3,6 +3,8 @@ package com.contacts.data.models;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+
 @Data
 @Document(collection = "contacts")
 public class Contact {
@@ -13,6 +15,7 @@ public class Contact {
     private String lastName;
     private String phoneNumber;
     private String email;
+    private LocalDate dateCreated;
     private boolean isSpam;
-    private String[] tags;
+    private String[] fields;
 }
