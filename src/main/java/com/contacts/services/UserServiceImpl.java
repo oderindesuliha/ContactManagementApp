@@ -7,43 +7,78 @@ import com.contacts.dtos.requests.UserRegisterRequest;
 import com.contacts.dtos.requests.VerifyOtpRequest;
 import com.contacts.dtos.responses.UserLoginResponse;
 import com.contacts.dtos.responses.UserRegisterResponse;
-import com.contacts.exceptions.ContactException;
+import com.contacts.dtos.responses.VerifyOtpResponse;
+import com.contacts.exceptions.UserException;
+import com.contacts.utils.UserMapper;
+import com.contacts.validations.UserValidation;
+import com.contacts.validations.UserValidations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OtpService otpService;
 
-        @Autowired
-        private UserRepository userRepository;
-        @Autowired
-        private OtpServiceImpl otpService;
-
-        @Override
-        public UserRegisterResponse registerUser(UserRegisterRequest request) {
-            if (userRepository.findByEmail(request.getEmail()) != null) {
-                throw new ContactException("Email already exists");
-            }
-            if (userRepository.findByPhoneNumber(request.getPhoneNumber()) != null) {
-                throw new ContactException("Phone number already exists");
-            }
-            User user = new User();
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
-            user.setEmail(request.getEmail());
-            user.setPhoneNumber(request.getPhoneNumber()); // Store phoneNumber
-            user = userRepository.save(user);
-            otpService.generateOtp(user.getId(), request.getPhoneNumber());
-            return mapToUserRegisterResponse(user, "Registration successful! Please verify your phone number with the OTP sent.");
+    @Override
+    public UserRegisterResponse registerUser(UserRegisterRequest request) {
+        UserValidations.validateUser(request);
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new UserException("User with this phone number already exists");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UserException("Email already in use");
+        }
+        UserMapper.mapRegisterRequest(UserRegisterRequest request);
+        User savedUser = userRepository.save(user);
+        otpService.generateOtp(request.getPhoneNumber());
+        UserRegisterResponse response = new UserRegisterResponse();
+        response.setMessage("Account created successfully...OTP has been sent for verification");
+        response.setUserId(savedUser.getUserId());
+        return response;
     }
 
     @Override
     public UserLoginResponse login(UserLoginRequest request) {
-        return null;
+        UserValidations.validatePhoneNumber(request.getPhoneNumber());
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber());
+        if (user == null) {
+            throw new UserException("User not found");
+        }
+        otpService.generateOtp(request.getPhoneNumber());
+        UserLoginResponse response = new UserLoginResponse();
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setMessage("OTP sent for login verification.");
+        return response;
     }
 
     @Override
-    public void verifyOtp(VerifyOtpRequest request) {
+    public VerifyOtpResponse verifyOtp(VerifyOtpRequest request) {
+        UserValidations.validateOtp(request);
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber());
+        if (user == null) {
+            throw new UserException("User not found");
+        }
+        VerifyOtpResponse response = otpService.verifyOtp(request);
+        if (response.isValidOtp() && !user.isVerified()) {
+            user.setVerified(true);
+            userRepository.save(user);
+        }
+        return response;
+    }
 
+    @Override
+    public void sendOtp(String phoneNumber) {
+        UserValidations.validatePhoneNumber(phoneNumber);
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new UserException("User not found");
+        }
+        otpService.generateOtp(phoneNumber);
     }
 }

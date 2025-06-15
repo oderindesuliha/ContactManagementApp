@@ -16,7 +16,9 @@ public class Otp {
     private String phoneNumber;
     private String otp;
     private LocalDateTime otpGeneratedTime;
-    private LocalDate otpExpiryTime;
+    private LocalDateTime otpExpiryTime;
     private boolean isUsed;
+
+
 }
 

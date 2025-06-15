@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface OtpRepository extends MongoRepository<Otp, String> {
     Optional<Otp> findByOtpAndUserId(String otp, String userId);
     boolean existsByOtpAndUserId(String otp, String userId);
+    Optional<Otp> findByPhoneNumber(String phoneNumber);
 
 }
