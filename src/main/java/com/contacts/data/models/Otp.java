@@ -12,9 +12,11 @@ import java.time.LocalDateTime;
 public class Otp {
     @Id
     private String id;
+    private String userId;
     private String phoneNumber;
     private String otp;
     private LocalDateTime otpGeneratedTime;
     private LocalDate otpExpiryTime;
-    private boolean otpVerified;
+    private boolean isUsed;
 }
+

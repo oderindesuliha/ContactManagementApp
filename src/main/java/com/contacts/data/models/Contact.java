@@ -15,7 +15,6 @@ public class Contact {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private LocalDate dateCreated;
     private boolean isSpam;
     private String[] fields;
 }

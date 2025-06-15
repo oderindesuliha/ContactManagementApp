@@ -60,7 +60,6 @@ public class ContactRepositoryTest {
         contact.setLastName("Tinubu");
         contact.setEmail("b@gmail.com");
         contact.setPhoneNumber("09090909090");
-        contact.setDateCreated(LocalDate.of(2025, 6, 5));
         contactRepository.save(contact);
         assertEquals(1, contactRepository.count());
 
@@ -76,7 +75,6 @@ public class ContactRepositoryTest {
         contact1.setLastName("Tinubu");
         contact1.setEmail("bt@gmail.com");
         contact1.setPhoneNumber("09090909090");
-        contact1.setDateCreated(LocalDate.of(2025, 6, 5));
         contactRepository.save(contact1);
         assertEquals(1, contactRepository.count());
 
@@ -85,7 +83,6 @@ public class ContactRepositoryTest {
         contact2.setLastName("Tinubu");
         contact2.setPhoneNumber("08081828183");
         contact2.setEmail("Yewande@yahoo.com");
-        contact2.setDateCreated(LocalDate.of(2025, 6, 6));
         contactRepository.save(contact2);
         assertEquals(2, contactRepository.count());
 
@@ -93,7 +90,6 @@ public class ContactRepositoryTest {
         contact3.setFirstName("Tunde");
         contact3.setLastName("Taiwo");
         contact3.setPhoneNumber("09090563473");
-        contact3.setDateCreated(LocalDate.of(2025, 6, 5));
         contactRepository.save(contact3);
         assertEquals(3, contactRepository.count());
 
@@ -112,7 +108,6 @@ public class ContactRepositoryTest {
         contact.setLastName("Tinubu");
         contact.setPhoneNumber("08081828183");
         contact.setEmail("Yewande@yahoo.com");
-        contact.setDateCreated(LocalDate.of(2025, 5, 5));
 
         contactRepository.save(contact);
         assertEquals(1, contactRepository.count());
