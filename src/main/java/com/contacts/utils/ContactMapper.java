@@ -3,9 +3,7 @@ package com.contacts.utils;
 import com.contacts.data.models.Contact;
 import com.contacts.dtos.requests.ContactRequest;
 import com.contacts.dtos.responses.ContactResponse;
-import com.contacts.dtos.responses.MessageCard;
 
-import java.time.LocalDate;
 
 public class ContactMapper {
     public static Contact mapContactRequest(ContactRequest request) {
@@ -15,6 +13,7 @@ public class ContactMapper {
         contact.setPhoneNumber(request.getPhoneNumber());
         contact.setEmail(request.getEmail());
         contact.setFields(request.getFields());
+        contact.setUserId(request.getUserId());
         contact.setSpam(false);
         return contact;
     }

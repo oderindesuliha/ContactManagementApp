@@ -3,11 +3,12 @@ package com.contacts.dtos.requests;
 import lombok.Data;
 
 @Data
-public class ContactRequest {
+public class UpdateContactRequest {
+    private String userId;
+    private String phoneNumber;
     private String firstName;
     private String lastName;
-    private String phoneNumber;
     private String email;
-    private String userId;
-    private String[] fields;
+    private String contactId;
+
 }

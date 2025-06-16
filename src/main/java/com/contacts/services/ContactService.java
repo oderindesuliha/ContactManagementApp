@@ -1,14 +1,17 @@
 package com.contacts.services;
 
 import com.contacts.dtos.requests.ContactRequest;
+import com.contacts.dtos.requests.DeleteContactRequest;
+import com.contacts.dtos.requests.PhoneNumberRequest;
+import com.contacts.dtos.requests.UpdateContactRequest;
 import com.contacts.dtos.responses.ContactResponse;
 
 import java.util.List;
 
 public interface ContactService {
-    ContactResponse addContact(String userId, ContactRequest contactRequest);
-    ContactResponse updateContact(String userId, ContactRequest contactRequest);
-    ContactResponse findContactByPhoneNumber (String phoneNo);
+    ContactResponse addContact(ContactRequest contactRequest);
+    ContactResponse updateContact( UpdateContactRequest updateContactRequest);
+    ContactResponse findContactByPhoneNumber (PhoneNumberRequest phoneNumberRequest);
     List<ContactResponse> findContactsByFields(String userId, String field);
-    void deleteContact(String userId, String phoneNumber);
+    String deleteContact(DeleteContactRequest deleteContactRequest);
 }

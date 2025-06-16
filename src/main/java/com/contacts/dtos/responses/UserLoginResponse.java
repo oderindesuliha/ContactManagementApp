@@ -8,5 +8,4 @@ public class UserLoginResponse {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String message;
 }

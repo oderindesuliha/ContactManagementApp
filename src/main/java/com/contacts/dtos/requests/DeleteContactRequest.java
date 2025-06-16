@@ -3,7 +3,8 @@ package com.contacts.dtos.requests;
 import lombok.Data;
 
 @Data
-public class VerifyOtpRequest {
+public class DeleteContactRequest {
+    private String userId;
     private String phoneNumber;
-    private String otp;
+
 }

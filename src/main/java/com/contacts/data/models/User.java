@@ -16,6 +16,9 @@ public class User {
     private String lastName;
     private String phoneNumber;
     private String email;
+    private String password;
     private boolean verified;
     private List<String> contactIds;
+
+
 }

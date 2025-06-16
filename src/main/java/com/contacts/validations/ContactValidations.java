@@ -1,6 +1,7 @@
 package com.contacts.validations;
 
 import com.contacts.dtos.requests.ContactRequest;
+import com.contacts.dtos.requests.UpdateContactRequest;
 import com.contacts.exceptions.ContactException;
 
 public class ContactValidations {
@@ -29,6 +30,34 @@ public class ContactValidations {
         } else {
             throw new ContactException("Phone number must start with either 0 or +234");
         }
+
+    }
+
+        public static void validateUpdateContact(UpdateContactRequest updateContactRequest) {
+            if (updateContactRequest.getFirstName() == null || updateContactRequest.getFirstName().trim().isEmpty()) {
+                throw new ContactException("First name is required");
+            }
+            if (updateContactRequest.getLastName() == null || updateContactRequest.getLastName().trim().isEmpty()) {
+                throw new ContactException("Last name is required");
+            }
+
+            if (updateContactRequest.getPhoneNumber() == null || updateContactRequest.getPhoneNumber().trim().isEmpty()) {
+                throw new ContactException("Phone number is required");
+            }
+            if (updateContactRequest.getPhoneNumber().startsWith("0")) {
+                String phoneNumber = updateContactRequest.getPhoneNumber().replaceAll("\\s", "").trim();
+                if (!phoneNumber.matches("^0(70|80|81|90|91)[0-9]{8}$")) {
+                    throw new ContactException("Please enter a valid Nigerian phone number");
+                }
+            } else if (updateContactRequest.getPhoneNumber().startsWith("+234")) {
+                String checkPhoneNumber = updateContactRequest.getPhoneNumber().replaceAll("\\s", "").trim();
+
+                if (!checkPhoneNumber.matches("^\\+234(70|80|81|90|91)[0-9]{8}$")) {
+                    throw new ContactException("Please enter a valid Nigerian phone number");
+                }
+            } else {
+                throw new ContactException("Phone number must start with either 0 or +234");
+            }
     }
 }
 

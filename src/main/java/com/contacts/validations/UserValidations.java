@@ -1,7 +1,6 @@
 package com.contacts.validations;
 
 import com.contacts.dtos.requests.UserRegisterRequest;
-import com.contacts.dtos.requests.VerifyOtpRequest;
 import com.contacts.exceptions.UserException;
 
 public class UserValidations {
@@ -14,12 +13,6 @@ public class UserValidations {
         validatePhoneNumber(request.getPhoneNumber());
     }
 
-    public static void validateOtp(VerifyOtpRequest request) {
-        if (request == null || request.getPhoneNumber() == null || request.getOtp() == null) {
-            throw new UserException("Invalid verification");
-        }
-        validatePhoneNumber(request.getPhoneNumber());
-    }
 
     private static void validateNames(String firstName, String lastName) {
         if (firstName == null || firstName.trim().isEmpty() || !firstName.matches("^[A-Za-z\\s-']{2,50}$")) {

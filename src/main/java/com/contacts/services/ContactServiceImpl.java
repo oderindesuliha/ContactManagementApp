@@ -5,6 +5,9 @@ import com.contacts.data.models.User;
 import com.contacts.data.repositories.ContactRepository;
 import com.contacts.data.repositories.UserRepository;
 import com.contacts.dtos.requests.ContactRequest;
+import com.contacts.dtos.requests.DeleteContactRequest;
+import com.contacts.dtos.requests.PhoneNumberRequest;
+import com.contacts.dtos.requests.UpdateContactRequest;
 import com.contacts.dtos.responses.ContactResponse;
 import com.contacts.exceptions.ContactException;
 import com.contacts.utils.ContactMapper;
@@ -25,15 +28,15 @@ public class ContactServiceImpl implements ContactService {
     private UserRepository userRepository;
 
     @Override
-    public ContactResponse addContact(String userId, ContactRequest contactRequest) {
-        ContactValidations.validateContact(contactRequest);
+    public ContactResponse addContact(ContactRequest contactRequest) {
+       ContactValidations.validateContact(contactRequest);
 
         if (contactRepository.existsByPhoneNumber(contactRequest.getPhoneNumber())) {
             throw new ContactException("Phone number already exists");
         }
 
-        Optional<User> selectedUser = userRepository.findById(userId);
-        if (!selectedUser.isPresent()) {
+        Optional<User> selectedUser = userRepository.findById(contactRequest.getUserId());
+        if (selectedUser.isEmpty()) {
             throw new ContactException("User not found");
         }
         User user = selectedUser.get();
@@ -51,29 +54,33 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ContactResponse updateContact(String userId, ContactRequest contactRequest) {
-        ContactValidations.validateContact(contactRequest);
+    public ContactResponse updateContact(UpdateContactRequest updateContactRequest) {
 
-        Optional<User> selectedUser = userRepository.findById(userId);
-        if (!selectedUser.isPresent()) {
+        ContactValidations.validateUpdateContact(updateContactRequest);
+
+        Optional<User> selectedUser = userRepository.findById(updateContactRequest.getUserId());
+        if (selectedUser.isEmpty()) {
             throw new ContactException("User not found");
         }
-        User user = selectedUser.get();
 
-        Optional<Contact> selectedContact = contactRepository.findByPhoneNumber(contactRequest.getPhoneNumber());
-        if (!selectedContact.isPresent()) {
+
+
+        Optional<Contact> selectedContact = contactRepository.findById(updateContactRequest.getContactId());
+        if (selectedContact.isEmpty()) {
             throw new ContactException("Contact not found!");
         }
+
         Contact contact = selectedContact.get();
 
-        if (!user.getContactIds().contains(contact.getId())) {
-            throw new ContactException("You can't update/delete this contact, it's not in your contact list");
+        if(!contact.getUserId().equals(updateContactRequest.getUserId())) {
+            throw new ContactException("You are not authorized to update this contact!");
         }
 
-        contact.setFirstName(contactRequest.getFirstName());
-        contact.setLastName(contactRequest.getLastName());
-        contact.setEmail(contactRequest.getEmail());
-        contact.setFields(contactRequest.getFields());
+
+        contact.setFirstName(updateContactRequest.getFirstName());
+        contact.setLastName(updateContactRequest.getLastName());
+        contact.setEmail(updateContactRequest.getEmail());
+        contact.setPhoneNumber(updateContactRequest.getPhoneNumber());
 
         Contact updatedContact = contactRepository.save(contact);
 
@@ -81,11 +88,20 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ContactResponse findContactByPhoneNumber(String phoneNo) {
-        Optional<Contact> selectedContact = contactRepository.findByPhoneNumber(phoneNo);
-        if (!selectedContact.isPresent()) {
+    public ContactResponse findContactByPhoneNumber(PhoneNumberRequest phoneNumberRequest) {
+
+        Optional<User> selectedUser = userRepository.findById(phoneNumberRequest.getUserId());
+        if (selectedUser.isEmpty()) {
+            throw new ContactException("User not found");
+        }
+
+        Optional<Contact> selectedContact = contactRepository.findByPhoneNumber(phoneNumberRequest.getPhoneNo());
+        if (selectedContact.isEmpty()) {
             throw new ContactException("Contact not found!");
         }
+        if(!selectedContact.get().getUserId().equals(selectedUser.get().getUserId()))
+            throw new ContactException("You are not authorized to view this contact!");
+
         Contact contact = selectedContact.get();
 
         return ContactMapper.mapContactResponse(contact, "Contact found!");
@@ -114,25 +130,24 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void deleteContact(String userId, String phoneNumber) {
-        Optional<User> selectedUser = userRepository.findById(userId);
-        if (!selectedUser.isPresent()) {
+    public String deleteContact(DeleteContactRequest deleteContactRequest) {
+        Optional<User> selectedUser = userRepository.findById(deleteContactRequest.getUserId());
+        if (selectedUser.isEmpty()) {
             throw new ContactException("User not found");
         }
         User user = selectedUser.get();
 
-        Optional<Contact> selectedContact = contactRepository.findByPhoneNumber(phoneNumber);
-        if (!selectedContact.isPresent()) {
+        System.out.println(deleteContactRequest.getPhoneNumber());
+        Optional<Contact> selectedContact = contactRepository.findByPhoneNumber(deleteContactRequest.getPhoneNumber());
+        if (selectedContact.isEmpty()) {
             throw new ContactException("Contact not found");
         }
         Contact contact = selectedContact.get();
 
-        if (!user.getContactIds().contains(contact.getId())) {
-            throw new ContactException("You can't update/delete this contact, it's not in your contact list");
-        }
+        if(!user.getUserId().equals(contact.getUserId()))
+            throw new ContactException("You are not authorized to delete this contact!");
 
-        user.getContactIds().remove(contact.getId());
-        userRepository.save(user);
-        contactRepository.deleteByPhoneNumber(phoneNumber);
+        contactRepository.delete(contact);
+        return "Contact deleted successfully";
     }
 }

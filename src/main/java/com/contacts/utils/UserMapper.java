@@ -1,12 +1,10 @@
 package com.contacts.utils;
 
-
 import com.contacts.data.models.User;
 import com.contacts.dtos.requests.UserRegisterRequest;
+//import com.contacts.dtos.responses.OtpResponse;
 import com.contacts.dtos.responses.UserLoginResponse;
 import com.contacts.dtos.responses.UserRegisterResponse;
-
-;
 
 public class UserMapper {
     public static User mapRegisterRequest(UserRegisterRequest request) {
@@ -16,6 +14,7 @@ public class UserMapper {
         user.setEmail(request.getEmail());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setVerified(false);
+        user.setPassword(Password.hashPassword(request.getPassword()));
         return user;
     }
 
@@ -24,6 +23,7 @@ public class UserMapper {
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
         response.setEmail(user.getEmail());
+        response.setUserId(user.getUserId());
         response.setContactIds(user.getContactIds());
         response.setMessage(message);
         return response;
@@ -35,7 +35,6 @@ public class UserMapper {
         response.setLastName(user.getLastName());
         response.setEmail(user.getEmail());
         response.setPhoneNumber(user.getPhoneNumber());
-        response.setMessage(message);
         return response;
     }
 

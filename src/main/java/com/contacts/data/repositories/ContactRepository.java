@@ -16,4 +16,5 @@ public interface ContactRepository extends MongoRepository<Contact, String> {
     boolean existsByPhoneNumber(String phoneNumber);
     List<Contact> findByFieldsContaining(String field);
     Optional<Contact> findByFirstNameAndLastName(String firstName, String lastName);
+
 }
